@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Sale order / offerte aanpassing -->
+    <record id="view_sale_order_form_inherit_pico" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.pico</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <!-- 1. Verplaats veld client_order_ref naar hoofdpagina -->
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                <field name="client_order_ref"/>
+            </xpath>
+            <!-- 2. Verberg veld client_order_ref in tab ander info -->
+	        <xpath expr="//page[@name='other_information']//field[@name='client_order_ref']" position="attributes">
+               <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- Binnen de order_line widget duiken
+            <xpath expr="//field[@name='order_line']//form//field[@name='product_uom_qty']" position="before">
+                <field name="pallet_qty"/>
+            </xpath>
+            -->
+
+            <xpath expr="//field[@name='tax_totals']" position="after">
+                <field name="total_weight" readonly="1"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- Inline list (tabelweergave) binnen verkooporder -->
+<record id="view_sale_order_form_inline_list_inherit_pico" model="ir.ui.view">
+    <field name="name">sale.order.form.inline.list.inherit.pico</field>
+    <field name="model">sale.order</field>
+    <field name="inherit_id" ref="sale.view_order_form"/>
+    <field name="arch" type="xml">
+        <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']" position="before">
+            <field name="pallet_qty" string="Palletsss"/>
+        </xpath>
+        <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']" position="after">
+            <field name="line_weight" string="Gewicht (kg)" readonly="1"/>
+        </xpath>
+    </field>
+</record>
+
+    <!-- Draft/Editable weergave
+    <record id="view_order_line_tree_inherit_pico" model="ir.ui.view">
+        <field name="name">sale.order.line.tree.inherit.pico</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sale.view_order_line_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_uom_qty']" position="before">
+                <field name="pallet_qty"/>
+            </xpath>
+        </field>
+    </record>
+    -->
+
+    <!-- Readonly weergave (bevestigde orders) -->
+    <record id="view_order_line_form_readonly_inherit_pico" model="ir.ui.view">
+        <field name="name">sale.order.line.form.readonly.inherit.pico</field>
+        <field name="model">sale.order.line</field>
+        <field name="inherit_id" ref="sale.sale_order_line_view_form_readonly"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_uom_qty']" position="after">
+                <field name="pallet_qty"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
