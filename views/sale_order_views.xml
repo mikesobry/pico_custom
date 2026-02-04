@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <!-- Sale order / offerte aanpassing -->
+    <!-- standaard vieuw voor Offerte / Sales order
+            - ref klant in hoofdvieuw plaatsen
+            - totaal gewicht van order onderaan toevoegen
+     -->
     <record id="view_sale_order_form_inherit_pico" model="ir.ui.view">
         <field name="name">sale.order.form.inherit.pico</field>
         <field name="model">sale.order</field>
@@ -28,20 +31,20 @@
         </field>
     </record>
 
-    <!-- Inline list (tabelweergave) binnen verkooporder -->
-<record id="view_sale_order_form_inline_list_inherit_pico" model="ir.ui.view">
-    <field name="name">sale.order.form.inline.list.inherit.pico</field>
-    <field name="model">sale.order</field>
-    <field name="inherit_id" ref="sale.view_order_form"/>
-    <field name="arch" type="xml">
-        <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']" position="before">
-            <field name="pallet_qty" string="Palletsss"/>
-        </xpath>
-        <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']" position="after">
-            <field name="line_weight" string="Gewicht (kg)" readonly="1"/>
-        </xpath>
-    </field>
-</record>
+    <!-- standaard vieuw voor Offerte / Sales order - kolom voor pallet en gewicht toevoegen -->
+    <record id="view_sale_order_form_inline_list_inherit_pico" model="ir.ui.view">
+        <field name="name">sale.order.form.inline.list.inherit.pico</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']" position="before">
+                <field name="pallet_qty" string="Pallets"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']" position="after">
+                <field name="line_weight" string="Gewicht (kg)" readonly="1"/>
+            </xpath>
+        </field>
+    </record>
 
     <!-- Draft/Editable weergave
     <record id="view_order_line_tree_inherit_pico" model="ir.ui.view">
@@ -56,7 +59,8 @@
     </record>
     -->
 
-    <!-- Readonly weergave (bevestigde orders) -->
+    <!-- Readonly Sales Order Line weergave - aantal pallets toevoegen
+         Wordt eigenlijk niet gebruikt, enkel zichtbaar in debugmode via bekijk knop-->
     <record id="view_order_line_form_readonly_inherit_pico" model="ir.ui.view">
         <field name="name">sale.order.line.form.readonly.inherit.pico</field>
         <field name="model">sale.order.line</field>

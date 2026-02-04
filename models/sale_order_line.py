@@ -5,7 +5,7 @@ _logger = logging.getLogger(__name__)
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
-    pallet_qty = fields.Float(string='Aantal piiiiillets')
+    pallet_qty = fields.Float(string='Aantal bestelde pallets')
     line_weight = fields.Float(string='Gewicht (kg)', compute='_compute_line_weight')
 
     @api.onchange('pallet_qty')

@@ -6,7 +6,11 @@ _logger = logging.getLogger(__name__)
 class StockMove(models.Model):
     _inherit = 'stock.move'
 
-    requested_pallets = fields.Integer(string='Pal', compute='_compute_requested_pallets', store=False)
+    requested_pallets = fields.Integer(
+        string='Pal',
+        compute='_compute_requested_pallets',
+        store=False
+    )
 
     # nieuw invoerveld
     loaded_pallets = fields.Float(
