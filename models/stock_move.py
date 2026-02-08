@@ -1,3 +1,5 @@
+# pico_custom/models/stock_move.py
+
 from odoo import models, fields, api
 import logging
 
@@ -16,6 +18,17 @@ class StockMove(models.Model):
     loaded_pallets = fields.Float(
         string='Pal geladen',
         help='Aantal effectief geladen pallets voor deze stock move.'
+    )
+
+    pico_batch_code = fields.Char(
+        string="Lot",
+        help="Interne productiebatch (bv. PK035)"
+    )
+
+    line_weight = fields.Float(
+        string="Weight (kg)",
+        compute='_compute_line_weight',
+        help="totale gewicht van lijn",
     )
 
     @api.depends('product_uom_qty', 'product_id.pieces_per_pallet')
@@ -41,3 +54,20 @@ class StockMove(models.Model):
                     move.product_id.pieces_per_pallet,
                     move.product_uom_qty,
                 )
+    """
+    def get_first_batch(self):
+        _logger.warning("get_first_batch called on %s", self)
+        return self.pico_batch_code or ''
+    """
+
+    @api.depends('product_uom_qty', 'product_id.weight')
+    def _compute_line_weight(self):
+        for move in self:
+            qty = move.quantity or 0.0
+            weight = move.product_id.weight or 0.0
+            move.line_weight = qty * weight
+
+    @api.onchange('quantity', 'product_id')
+    def _onchange_line_weight(self):
+        for move in self:
+            move.line_weight = (move.quantity or 0.0) * (move.product_id.weight or 0.0)

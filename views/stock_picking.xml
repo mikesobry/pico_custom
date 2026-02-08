@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="view_picking_form_weight_totals_pico" model="ir.ui.view">
+        <field name="name">stock.picking.form.weight.totals.pico</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+
+            <!-- onder de move tabel -->
+            <xpath expr="//field[@name='move_ids']" position="after">
+
+                <div class="o_row mt16" style="justify-content:space-between; width:100%;">
+
+                    <!-- LINKS: pallets -->
+                    <table class="table table-sm" style="width:auto;">
+                        <tr>
+                            <td><strong>Pallets uit</strong></td>
+                            <td><field name="pallets_loaded" readonly="1"/></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pallets retour</strong></td>
+                            <td><field name="pallets_received"/></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pallet saldo</strong></td>
+                            <td><field name="pallet_balance" readonly="1"/></td>
+                        </tr>
+                    </table>
+
+                    <!-- RECHTS: gewichten -->
+                    <table class="table table-sm" style="width:auto; text-align:right;">
+                        <tr>
+                            <td><strong>Net weight</strong></td>
+                            <td><field name="total_net_weight" readonly="1"/></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Gross weight</strong></td>
+                            <td><field name="total_gross_weight" readonly="1"/></td>
+                        </tr>
+                    </table>
+
+                </div>
+
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

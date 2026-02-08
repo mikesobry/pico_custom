@@ -11,6 +11,12 @@
             <xpath expr="//field[@name='move_ids']/list/field[@name='product_uom_qty']" position="after">
                 <field name="loaded_pallets"/>
             </xpath>
+            <xpath expr="//field[@name='move_ids']/list/field[@name='loaded_pallets']" position="after">
+                <field name="pico_batch_code"/>
+            </xpath>
+            <xpath expr="//field[@name='move_ids']/list/field[@name='quantity']" position="after">
+                <field name="line_weight"/>
+            </xpath>
         </field>
     </record>
 </odoo>
