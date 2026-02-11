@@ -1,6 +1,7 @@
 # pico_custom/models/stock_move.py
 
 from odoo import models, fields, api
+import re
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -17,7 +18,8 @@ class StockMove(models.Model):
     # nieuw invoerveld
     loaded_pallets = fields.Float(
         string='Pal geladen',
-        help='Aantal effectief geladen pallets voor deze stock move.'
+        help='Aantal effectief geladen pallets voor deze stock move.',
+        digits=(16, 0),
     )
 
     pico_batch_code = fields.Char(
@@ -71,3 +73,28 @@ class StockMove(models.Model):
     def _onchange_line_weight(self):
         for move in self:
             move.line_weight = (move.quantity or 0.0) * (move.product_id.weight or 0.0)
+
+    def _prepare_merge_moves_distinct_fields(self):
+        _logger.warning("prepare_merge_moves_distinct_fields CALLED !!!!!")
+        fields = super()._prepare_merge_moves_distinct_fields()
+
+        if any(m.picking_id.picking_type_id.code == 'outgoing' for m in self):
+            fields.append('pico_batch_code')
+
+        return fields
+
+    @api.onchange('pico_batch_code')
+    def _onchange_pico_batch_code(self):
+        """Normalize batch code: two letters + zero-padded number (3 digits)"""
+        for move in self:
+            if not move.pico_batch_code:
+                continue
+
+            val = move.pico_batch_code.strip().upper()
+            m = re.match(r'^([A-Z]{2})0*(\d+)$', val)
+            if m:
+                prefix, number = m.groups()
+                move.pico_batch_code = f"{prefix}{int(number):03d}"
+                _logger.info("Normalized pico_batch_code: %s", move.pico_batch_code)
+            else:
+                _logger.warning("Invalid pico_batch_code format: %s", move.pico_batch_code)

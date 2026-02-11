@@ -87,55 +87,51 @@
 
             <!-- footer voor pallets in - uit info en totale gewichten -->
             <tfoot>
-    <tr>
-        <td colspan="7" style="padding-top:16px;">
-            <!-- hoofdtabel met twee kolommen: links pallets, rechts gewichten -->
-            <table class="table table-sm table-borderless" style="width:100%;">
                 <tr>
-                    <!-- LINKS: pallets -->
-                    <td style="vertical-align:top; width:80%;">
-                        <table class="table table-sm table-borderless" style="width:auto;">
+                    <td colspan="7" style="padding-top:16px;">
+                        <!-- hoofdtabel met twee kolommen: links pallets, rechts gewichten -->
+                        <table class="table table-sm table-borderless" style="width:100%;">
                             <tr>
-                                <td><strong>Pallets uit</strong></td>
-                                <td class="text-end"><span t-out="o.pallets_loaded"/></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Pallets retour</strong></td>
-                                <td class="text-end"><span t-out="o.pallets_received"/></td>
-                            </tr>
-                            <tr>
-                                <td><strong>Pallet saldo</strong></td>
-                                <td class="text-end"><span t-out="o.pallet_balance"/></td>
-                            </tr>
-                        </table>
-                    </td>
-
-                    <!-- RECHTS: gewichten -->
-                    <td style="vertical-align:top; width:auto; text-align:right;">
-                        <table class="table table-sm table-borderless" style="width:auto;">
-                            <tr>
-                                <td style="white-space:nowrap;"><strong>Net weight</strong></td>
-                                <td style="white-space:nowrap;" class="text-end">
-                                    <span t-out="format_number(o.total_net_weight)"/> kg
+                                <!-- LINKS: pallets -->
+                                <td style="vertical-align:top; width:80%;">
+                                    <table class="table table-sm table-borderless" style="width:auto;">
+                                        <tr>
+                                            <td><strong>Pallets uit</strong></td>
+                                            <td class="text-end"><span t-out="int(o.pallets_loaded)"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Pallets retour</strong></td>
+                                            <td class="text-end"><span t-out="o.pallets_received"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Pallet saldo</strong></td>
+                                            <td class="text-end"><span t-out="o.pallet_balance"/></td>
+                                        </tr>
+                                    </table>
                                 </td>
-                            </tr>
-                            <tr>
-                                <td style="white-space:nowrap;"><strong>Gross weight</strong></td>
-                                <td style="white-space:nowrap;" class="text-end">
-                                    <span t-out="format_number(o.total_gross_weight)"/> kg
+
+                                <!-- RECHTS: gewichten -->
+                                <td style="vertical-align:top; width:auto; text-align:right;">
+                                    <table class="table table-sm table-borderless" style="width:auto;">
+                                        <tr>
+                                            <td style="white-space:nowrap;"><strong>Net weight</strong></td>
+                                            <td style="white-space:nowrap;" class="text-end">
+                                                <span t-out="format_number(o.total_net_weight)"/> kg
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="white-space:nowrap;"><strong>Gross weight</strong></td>
+                                            <td style="white-space:nowrap;" class="text-end">
+                                                <span t-out="format_number(o.total_gross_weight)"/> kg
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </td>
                             </tr>
                         </table>
                     </td>
                 </tr>
-            </table>
-        </td>
-    </tr>
-</tfoot>
-
-
-
-
+            </tfoot>
         </xpath>
     </template>
 

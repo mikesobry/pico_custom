@@ -11,6 +11,7 @@ class StockPicking(models.Model):
         string="Pallets uit",
         compute="_compute_weights",
         store=False,
+        digits=(16, 0)
     )
     pallets_received = fields.Integer(string="Pallets retour")
 
