@@ -1,0 +1,18 @@
+<odoo>
+    <record id="report_saleorder_plantool" model="ir.actions.report">
+        <field name="name">SO Plantool</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+
+        <!-- Dit is de QWeb template die gerenderd wordt -->
+        <field name="report_name">pico_custom.saleorder_plantool_document</field>
+
+        <!-- report_file is meestal hetzelfde als report_name, maar kan leeg of identiek -->
+        <field name="report_file">pico_custom.saleorder_plantool_document</field>
+
+        <field name="print_report_name">'Plantool - %s' % (object.name)</field>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>
+

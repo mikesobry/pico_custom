@@ -4,16 +4,16 @@ _logger = logging.getLogger(__name__)
 
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
-    _logger.warning("### STOCK PICKING FILE LOADED ###")
 
-    '''pallets_loaded = fields.Float(string="Pallets uit")'''
     pallets_loaded = fields.Float(
         string="Pallets uit",
         compute="_compute_weights",
         store=False,
         digits=(16, 0)
     )
-    pallets_received = fields.Integer(string="Pallets retour")
+    pallets_received = fields.Integer(
+        string="Pallets retour"
+    )
 
     pallet_balance = fields.Integer(
         string="Pallet saldo",
@@ -32,16 +32,6 @@ class StockPicking(models.Model):
         compute="_compute_weights",
         store=False
     )
-    '''
-    @api.depends(
-        "move_ids.quantity",
-        "move_ids.product_id.weight",
-        "move_ids.loaded_pallets",
-        "move_ids.line_weight",
-        "pallets_loaded",
-        "pallets_received",
-    )
-    '''
 
     @api.depends(
         "move_ids.loaded_pallets",

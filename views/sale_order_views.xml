@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <!-- standaard vieuw voor Offerte / Sales order
+    <!-- standaard vieuw voor Offerte / Sales order aanpassen
             - ref klant in hoofdvieuw plaatsen
             - totaal gewicht van order onderaan toevoegen
      -->
@@ -12,21 +12,34 @@
             <!-- 1. Verplaats veld client_order_ref naar hoofdpagina -->
             <xpath expr="//field[@name='payment_term_id']" position="after">
                 <field name="client_order_ref"/>
+                <field name="commitment_date"/>
             </xpath>
             <!-- 2. Verberg veld client_order_ref in tab ander info -->
 	        <xpath expr="//page[@name='other_information']//field[@name='client_order_ref']" position="attributes">
                <attribute name="invisible">1</attribute>
             </xpath>
 
-            <!-- Binnen de order_line widget duiken
-            <xpath expr="//field[@name='order_line']//form//field[@name='product_uom_qty']" position="before">
-                <field name="pallet_qty"/>
-            </xpath>
-            -->
-
             <xpath expr="//field[@name='tax_totals']" position="after">
-                <field name="total_weight" readonly="1"/>
+                <div class="mt-2">
+
+                    <div class="d-flex align-items-baseline">
+                        <strong class="me-2 text-nowrap">Netto gewicht (kg):</strong>
+                        <field name="total_weight" readonly="1" nolabel="1"/>
+                    </div>
+
+                    <div class="d-flex align-items-baseline">
+                        <strong class="me-2 text-nowrap">Bruto gewicht (kg):</strong>
+                        <field name="total_gross_weight" readonly="1" nolabel="1"/>
+                    </div>
+
+                    <div class="d-flex align-items-baseline">
+                        <strong class="me-2 text-nowrap">Totaal aantal pallets:</strong>
+                        <field name="total_pallets" readonly="1" nolabel="1" widget="integer"/>
+                    </div>
+
+                </div>
             </xpath>
+
 
         </field>
     </record>

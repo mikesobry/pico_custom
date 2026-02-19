@@ -1,0 +1,128 @@
+<odoo>
+    <!--  Maak eigen wrapper, was om niet alle xpaths te moeten herschrijven.  -->
+    <template id="saleorder_plantool_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="pico_custom.saleorder_plantool_document_inner"
+                   t-lang="doc.partner_id.lang"/>
+            </t>
+        </t>
+    </template>
+
+    <!--  Inherit saleorder document, alles dus.  -->
+    <template id="saleorder_plantool_document_inner"
+          inherit_id="sale.report_saleorder_document"
+          primary="True">
+
+        <!-- Voeg schrijfruimte toe voor lotnummers op de heftruck -->
+        <xpath expr="//td[@name='td_product_name']" position="attributes">
+            <attribute name="style">padding-bottom: 30px;</attribute>
+        </xpath>
+
+        <!-- Verberg Unit Price, Discount, Taxes in header -->
+        <xpath expr="//th[@name='th_priceunit']" position="attributes">
+            <attribute name="t-if">False</attribute>
+        </xpath>
+        <xpath expr="//th[@name='th_discount']" position="attributes">
+            <attribute name="t-if">False</attribute>
+        </xpath>
+        <xpath expr="//th[@name='th_taxes']" position="attributes">
+            <attribute name="t-if">False</attribute>
+        </xpath>
+        <xpath expr="//th[@name='th_subtotal']" position="attributes">
+            <attribute name="t-if">False</attribute>
+        </xpath>
+
+        <!-- Verberg de cellen met prijzen in de lijnen -->
+        <xpath expr="//td[@name='td_product_priceunit']" position="attributes">
+            <attribute name="t-if">False</attribute>
+        </xpath>
+        <xpath expr="//td[@name='td_product_discount']" position="attributes">
+            <attribute name="t-if">False</attribute>
+        </xpath>
+        <xpath expr="//td[@name='td_product_taxes']" position="attributes">
+            <attribute name="t-if">False</attribute>
+        </xpath>
+        <xpath expr="//td[@name='td_product_subtotal']" position="attributes">
+            <attribute name="t-if">False</attribute>
+        </xpath>
+
+        <!-- Voeg Pallets kolom toe -->
+        <!-- Verplaats header Pallets voor Description -->
+        <xpath expr="//th[@name='th_description']" position="before">
+            <th name="th_pallets" class="text-end">Pallets</th>
+        </xpath>
+
+        <!-- Verplaats body Pallets voor Description + int -->
+        <xpath expr="//td[@name='td_product_name']" position="before">
+            <td name="td_product_pallets" class="text-end">
+                <span t-esc="int(line.pallet_qty)"/>
+            </td>
+        </xpath>
+
+        <!-- kolom pallets smaller maken -->
+        <!-- TODO: width controleren, kan beter. -->
+        <xpath expr="//th[@name='th_pallets']" position="attributes">
+            <attribute name="class">text-end" style="width:15px;"</attribute>
+        </xpath>
+        <xpath expr="//td[@name='td_product_pallets']" position="attributes">
+            <attribute name="class">text-end" style="width:15px;"</attribute>
+        </xpath>
+
+        <!-- Header toevoegen (kolom “Gewicht (kg)”): -->
+        <xpath expr="//th[@name='th_quantity']" position="after">
+            <th name="th_weight" class="text-end">Gewicht (kg)</th>
+        </xpath>
+
+        <!-- Body-cel toevoegen (per regel het gewicht): -->
+        <xpath expr="//td[@name='td_product_quantity']" position="after">
+            <td name="td_product_weight" class="text-end">
+                <span t-esc="int(line.line_weight)"/>
+            </td>
+        </xpath>
+
+        <!-- Netto gewicht en pallets onderaan de orderlijnen -->
+        <xpath expr="//div[@name='so_total_summary']" position="before">
+            <div class="row mt-3">
+
+                <!-- Links: Totaal pallets -->
+                <div class="col-6 text-start">
+                    <strong>Totaal pallets:</strong>
+                    <span t-esc="int(doc.total_pallets)"/>
+                </div>
+
+                <!-- Rechts: totale gewicht -->
+                <div class="col-6 text-end">
+                    <div>
+                        <strong>Netto gewicht (kg):</strong>
+                        <span t-esc="doc.total_weight"/> kg
+                    </div>
+
+                    <div>
+                        <strong>Bruto gewicht (kg):</strong>
+                        <span t-esc="doc.total_gross_weight"/> kg
+                    </div>
+                </div>
+
+            </div>
+        </xpath>
+
+        <!-- Verberg totalen -->
+        <xpath expr="//div[@name='so_total_summary']" position="attributes">
+            <attribute name="t-if">False</attribute>
+        </xpath>
+
+        <!-- Verberg betaalvoorwaarden -->
+        <xpath expr="//p[span[@t-field='doc.payment_term_id.note']]" position="attributes">
+            <attribute name="t-if">False</attribute>
+        </xpath>
+
+        <!-- Verberg order_note -->
+        <xpath expr="//span[@name='order_note']/.." position="attributes">
+            <attribute name="t-if">False</attribute>
+        </xpath>
+
+
+    </template>
+
+</odoo>
