@@ -33,54 +33,16 @@ class StockPicking(models.Model):
         store=False
     )
 
+    """ compute totals based on move_ids. line information """
     @api.depends(
-        "move_ids.loaded_pallets",
-        "move_ids.line_weight",
+        "move_ids.move_line_ids.pallets_loaded",
+        "move_ids.move_line_ids.line_weight",
         "pallets_received",
     )
-
     def _compute_weights(self):
         for picking in self:
-            pallets_list = picking.move_ids.mapped('loaded_pallets')
-
-            _logger.warning(
-                "PICKING %s | moves=%s | loaded_pallets=%s",
-                picking.name,
-                picking.move_ids.ids,
-                pallets_list,
-            )
-
-            net = sum(picking.move_ids.mapped('line_weight'))
-            '''pallets = sum(picking.move_ids.mapped('loaded_pallets'))'''
-            pallets = sum(pallets_list)
-
-            _logger.warning(
-                "PICKING %s | total pallets = %s",
-                picking.name,
-                pallets,
-            )
-
-            picking.pallets_loaded = pallets
-            picking.total_net_weight = net
-            picking.total_gross_weight = net + (pallets * 30.0)
+            picking.pallets_loaded = sum(picking.move_ids.move_line_ids.mapped('pallets_loaded'))
             picking.pallet_balance = picking.pallets_loaded - picking.pallets_received
 
-    """
-    def get_delivery_table_lines(self):
-        Geeft een lijst van dicts terug, één per move, met de info voor de leveringsbon.
-        _logger.warning("CALLED: get_delivery_table_lines")
-
-        lines = []
-        for move in self.move_ids.filtered(lambda m: m.state != 'cancel'):
-            ppp = move.product_id.pieces_per_pallet or 0
-            pallets = move.product_uom_qty / ppp if ppp else 0
-            weight = move.product_id.weight * move.product_uom_qty if move.product_id.weight else 0
-            lines.append({
-                'product': move.product_id.display_name,
-                'lot': move.pico_batch_code or '',
-                'delivered': move.quantity_done,
-                'pallets': pallets,
-                'weight': weight,
-            })
-        return lines
-    """
+            picking.total_net_weight = sum(picking.move_ids.move_line_ids.mapped('line_weight'))
+            picking.total_gross_weight = picking.total_net_weight + (picking.pallets_loaded * 30.0)

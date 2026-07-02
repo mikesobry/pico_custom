@@ -97,7 +97,7 @@
                                     <table class="table table-sm table-borderless" style="width:auto;">
                                         <tr>
                                             <td><strong>Pallets uit</strong></td>
-                                            <td class="text-end"><span t-out="int(o.pallets_loaded)"/></td>
+                                            <td class="text-end"><span t-out="o.pallets_loaded"/></td>
                                         </tr>
                                         <tr>
                                             <td><strong>Pallets retour</strong></td>
@@ -143,7 +143,7 @@
         <xpath expr="//tr" position="replace">
             <tr t-foreach="aggregated_lines" t-as="line">
                 <td>
-                    <span t-out="aggregated_lines[line]['pallet_qty']"/>
+                    <span t-out="aggregated_lines[line]['pallets_loaded']"/>
                 </td>
                 <td>
                     <span t-out="aggregated_lines[line]['name']"/>

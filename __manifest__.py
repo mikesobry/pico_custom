@@ -16,6 +16,7 @@
         'views/product_template_views.xml',
         'views/sale_order_views.xml',
         'views/stock_move_views.xml',
+        'views/stock_move_operations.xml',
         'views/stock_picking.xml',
         'views/stock_picking_report_inherit.xml',
         'views/sale_res_config_settings_view_form.xml',
