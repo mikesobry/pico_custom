@@ -6,3 +6,4 @@ from . import stock_move_line
 from . import stock_picking
 from . import product_pricelist
 from . import res_config_settings
+from . import migrate_stock_move_lines
