@@ -5,6 +5,6 @@ class ResConfigSettings(models.TransientModel):
 
     sale_preparation_days = fields.Integer(
         string="Default Sales Preparation Days",
-        config_parameter='pico_custom.sale_preparation_days',
+        config_parameter='pico_custom_repo.sale_preparation_days',
         default=14,
     )

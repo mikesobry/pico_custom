@@ -51,7 +51,7 @@ class SaleOrder(models.Model):
 
         # Lees configuratie
         param = self.env['ir.config_parameter'].sudo().get_param(
-            'pico_custom.sale_preparation_days',
+            'pico_custom_repo.sale_preparation_days',
             default=14
         )
         prep_days = int(param)

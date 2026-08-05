@@ -1,4 +1,4 @@
-# pico_custom/models/migrate_stock_move_lines.py
+# pico_custom_repo/models/migrate_stock_move_lines.py
 
 import logging
 

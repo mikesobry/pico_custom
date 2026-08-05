@@ -1,4 +1,4 @@
-# pico_custom/models/stock_move_line.py
+# pico_custom_repo/models/stock_move_line.py
 
 from odoo import models, fields, api
 import logging
