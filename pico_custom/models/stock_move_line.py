@@ -117,6 +117,8 @@ class StockMoveLine(models.Model):
 
     def _get_aggregated_product_quantities(self, **kwargs):
 
+        _logger.warning("******* PICO TEST: _get_aggregated_product_quantities CALLED *******")
+
         result = {}
 
         for line in self:
@@ -124,7 +126,17 @@ class StockMoveLine(models.Model):
 
             result[key] = {
                 'name': line.product_id.display_name,
-                'description': line.description_picking or '',
+
+                'description': (
+                    line.description_picking
+                    if line.description_picking
+                       and line.description_picking not in (
+                           line.product_id.display_name,
+                           line.product_id.name,
+                       )
+                    else ''
+                ),
+
                 'product_uom': line.product_uom_id,
 
                 'quantity': line.quantity,
@@ -146,6 +158,13 @@ class StockMoveLine(models.Model):
 
                 'move_lines': line,
             }
+
+            _logger.info(
+                "PICO AGGREGATE: picking=%s, lines=%s, result_keys=%s",
+                self.mapped('picking_id').ids,
+                self.ids,
+                list(result.keys()),
+            )
 
         return result
 
