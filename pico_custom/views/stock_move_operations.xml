@@ -1,5 +1,4 @@
 <odoo>
-
     <record id="view_stock_move_line_operation_tree_pico" model="ir.ui.view">
         <field name="name">stock.move.line.operation.tree.pico</field>
         <field name="model">stock.move.line</field>
@@ -11,21 +10,15 @@
             </xpath>
 
             <xpath expr="//field[@name='pallets_loaded']" position="after">
-                <field name="pico_batch_code"/>
+                <field name="pico_batch_code"
+                       column_invisible="parent.has_tracking != 'none'"/>
             </xpath>
 
-            <!--
-            <xpath expr="//field[@name='pallets_loaded']" position="before">
-                <field name="id"/>
-            </xpath>
-            -->
-
-            <xpath expr="//field[@name='quantity']" position="after">
+            <xpath expr="//field[@name='product_uom_id']" position="after">
                 <field name="line_weight"/>
             </xpath>
 
         </field>
-
     </record>
 
     <record id="view_stock_move_operations_pico" model="ir.ui.view">
@@ -50,7 +43,11 @@
                 </attribute>
             </xpath>
 
-        </field>
-</record>
+            <xpath expr="//group[@name='product_qty']/group[1]" position="inside">
+                <field name="requested_pallets" string="Gevraagde pallets"/>
+                <field name="loaded_pallets" string="Geladen pallets"/>
+            </xpath>
 
+        </field>
+    </record>
 </odoo>

@@ -11,6 +11,7 @@
         'sale',     # voor sale.order
         'sale_stock', #voor 14 dagen extra op picking date
         'stock',    #voor stock.move
+        'stock_picking_batch'
     ],
     'data': [
         'views/product_template_views.xml',
@@ -22,6 +23,8 @@
         'views/sale_res_config_settings_view_form.xml',
         'report/sale_report_plantool_templates.xml', #pdf plantool
         'report/sale_report_plantool.xml', #pdf plantool
+        'report/stock_batch_deliveryslip_templates.xml',
+        'report/stock_batch_deliveryslip.xml',
     ],
     'installable': True,
     'application': False,

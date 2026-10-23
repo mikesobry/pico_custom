@@ -5,11 +5,10 @@ _logger = logging.getLogger(__name__)
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
 
-    pallets_loaded = fields.Float(
+    pallets_loaded = fields.Integer(
         string="Pallets uit",
         compute="_compute_weights",
-        store=False,
-        digits=(16, 0)
+        store=False
     )
     pallets_received = fields.Integer(
         string="Pallets retour"

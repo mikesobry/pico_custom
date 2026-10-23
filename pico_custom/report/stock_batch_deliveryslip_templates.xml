@@ -1,0 +1,55 @@
+<odoo>
+    <template id="report_wave_deliveryslip">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="partner" t-value="o.picking_ids[:1].partner_id"/>
+                <t t-call="web.external_layout" t-lang="partner.lang">
+                    <div class="page">
+                        <div class="row">
+                            <div class="col-6">
+                                <div t-field="o.picking_ids[:1].partner_id"
+                                     t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>
+                            </div>
+                        </div>
+
+                        <h2 class="mt-3">Leverbon <span t-field="o.name"/></h2>
+
+                        <t t-set="lines" t-value="o.picking_ids.move_ids.move_line_ids.sorted(
+                            lambda l: (l.move_id.sale_line_id.order_id.name or '', l.product_id.display_name))"/>
+
+                        <table class="table table-sm table-borderless">
+                            <thead>
+                                <tr>
+                                    <th>Pallet</th>
+                                    <th>Order</th>
+                                    <th>Product</th>
+                                    <th>Lot</th>
+                                    <th class="text-end">Delivered</th>
+                                    <th class="text-end">Weight</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="lines" t-as="line">
+                                    <td><span t-out="int(line.pallets_loaded or 0)"/></td>
+                                    <td><span t-out="line.move_id.sale_line_id.order_id.client_order_ref
+                                                     or line.move_id.sale_line_id.order_id.name"/></td>
+                                    <td><span t-out="line.product_id.display_name"/></td>
+                                    <td><span t-out="line.pico_batch_code or ''"/></td>
+                                    <td class="text-end">
+                                        <span t-field="line.quantity"/>
+                                        <span t-field="line.product_uom_id.name"/>
+                                    </td>
+                                    <td class="text-end">
+                                        <span t-field="line.line_weight"/> kg
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- footer: kopieer hier je pallets/gewicht-blok, met o.pallets_loaded enz. -->
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

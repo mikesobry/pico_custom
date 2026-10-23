@@ -11,14 +11,13 @@
             <xpath expr="//field[@name='move_ids']/list/field[@name='product_uom_qty']" position="after">
                 <field  name="loaded_pallets"
                         string="Pallets"
-                        attrs="{'readonly':[('move_line_count','>',1)]}"/>
+                        readonly="true"/>
             </xpath>
             <xpath expr="//field[@name='move_ids']/list/field[@name='loaded_pallets']" position="after">
                 <field  name="pico_batch_code"
                         attrs="{'readonly':[('move_line_count','>',1)]}"/>
             </xpath>
-
-            <xpath expr="//field[@name='move_ids']/list/field[@name='quantity']" position="after">
+            <xpath expr="//field[@name='move_ids']/list/field[@name='product_uom']" position="after">
                 <field name="line_weight"/>
             </xpath>
         </field>

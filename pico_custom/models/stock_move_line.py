@@ -3,6 +3,7 @@
 from odoo import models, fields, api
 import logging
 import re
+import math
 import copy
 
 _logger = logging.getLogger(__name__)
@@ -12,8 +13,11 @@ class StockMoveLine(models.Model):
 
     pallets_loaded = fields.Float(
         string="Pallets Loaded",
-        help='Aantal effectief geladen pallets voor dit lotnummer.',
+        compute="_compute_pallets_loaded",
+        store=True,
+        readonly=False,
         digits=(16, 0),
+        help='Aantal effectief geladen pallets voor dit lotnummer.'
     )
 
     pico_batch_code = fields.Char(
@@ -29,6 +33,7 @@ class StockMoveLine(models.Model):
         store=True
     )
 
+    """
     @api.onchange("pallets_loaded")
     def _onchange_pallets_loaded(self):
         for line in self:
@@ -37,6 +42,33 @@ class StockMoveLine(models.Model):
                         line.pallets_loaded *
                         line.product_id.pieces_per_pallet
                 )
+    """
+
+    @api.onchange("pallets_loaded", "product_uom_id")
+    def _onchange_pallets_loaded(self):
+        for line in self:
+            ppp = line.product_id.pieces_per_pallet
+            if not ppp:
+                continue
+            qty_base = line.pallets_loaded * ppp
+            if line.product_uom_id and line.product_uom_id != line.product_id.uom_id:
+                line.quantity = line.product_id.uom_id._compute_quantity(
+                    qty_base, line.product_uom_id, round=False
+                )
+            else:
+                line.quantity = qty_base
+
+    @api.depends('quantity', 'product_uom_id', 'product_id.pieces_per_pallet')
+    def _compute_pallets_loaded(self):
+        for line in self:
+            ppp = line.product_id.pieces_per_pallet
+            if not ppp or not line.product_uom_id:
+                line.pallets_loaded = line.pallets_loaded
+                continue
+            qty_base = line.product_uom_id._compute_quantity(
+                line.quantity, line.product_id.uom_id, round=False
+            )
+            line.pallets_loaded = math.ceil(round(qty_base / ppp, 6)) if qty_base else 0
 
     """ Regex op lotnummer toepassen pl1 en pl01 naar pl 001 te krijgen"""
     @api.onchange('pico_batch_code')
@@ -55,65 +87,20 @@ class StockMoveLine(models.Model):
             else:
                 _logger.warning("Invalid pico_batch_code format: %s", line.pico_batch_code)
 
-    """ Berekent het totale gewicht van de stock move line zelf"""
+    """ Berekent het totale gewicht van de stock move line zelf
     @api.depends('quantity', 'product_id.weight')
     def _compute_line_weight(self):
         for line in self:
             line.line_weight = line.quantity * line.product_id.weight
-
     """
-    def _get_aggregated_product_quantities(self, **kwargs):
-        strict = kwargs.get('strict', False)
-        except_package = kwargs.get('except_package', False)
 
-        # Start met originele aggregated data
-        res = super()._get_aggregated_product_quantities(**kwargs)
-
-        if strict and not self.filtered(lambda l: l.result_package_id):
-            _logger.warning("🔥 STRICT TRUE BUT NO PACKAGE LINES, returning empty dict")
-            return {}
-
-        res_split = {}
-
-        for line_key, data in res.items():
-            # Haal move lines uit data of fallback naar picking moves
-            move_lines = data.get('move_line_ids')
-            moves = move_lines.mapped('move_id') if move_lines else self.picking_id.move_ids.filtered(
-                lambda m: m.product_id == (data.get('product_id') or data.get('product'))
-            )
-
-            product = data.get('product_id') or data.get('product') or (moves[:1].product_id if moves else None)
-
-            # Loop per move, niet op geaggregeerde quantity
-            for i, move in enumerate(moves, start=1):
-                line_key_split = f"{line_key}_{i}"
-                new_data = copy.deepcopy(data)
-
-                # --- Quantity, pallets, lot en weight correct per move ---
-                delivered_qty = move.quantity  # v19: quantity is de geleverde hoeveelheid
-                pallets = move.loaded_pallets or 0
-                lot = move.pico_batch_code or ''
-
-                new_data.update({
-                    'quantity': delivered_qty,
-                    'pallet_qty': int(pallets),
-                    'pico_lot': lot,
-                    'weight': delivered_qty * (product.weight or 0.0) if product else 0.0,
-                })
-
-                res_split[line_key_split] = new_data
-
-                _logger.info(
-                    "SPLIT LINE '%s': product=%s, qty=%s, pallets=%s, pico_lot=%s",
-                    line_key_split,
-                    product.display_name if product else None,
-                    delivered_qty,
-                    pallets,
-                    lot
-                )
-
-        return res_split
-        """
+    @api.depends('quantity', 'product_uom_id', 'product_id.weight')
+    def _compute_line_weight(self):
+        for line in self:
+            qty_base = line.product_uom_id._compute_quantity(
+                line.quantity, line.product_id.uom_id
+            ) if line.product_uom_id and line.product_id else line.quantity
+            line.line_weight = qty_base * (line.product_id.weight or 0.0)
 
     def _get_aggregated_product_quantities(self, **kwargs):
 
