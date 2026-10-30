@@ -1,9 +1,6 @@
 from odoo import models, fields, api
-import logging
-_logger = logging.getLogger(__name__)
 
 PALLET_CODE = 'epal'   # interne referentie van het palletproduct
-
 
 class StockPicking(models.Model):
     _inherit = 'stock.picking'
@@ -71,3 +68,31 @@ class StockPicking(models.Model):
 
             picking.total_gross_weight = sum(lines.mapped('line_weight'))
             picking.total_net_weight = sum(goods_lines.mapped('line_weight'))
+
+    def button_validate(self):
+        if not self.env.context.get('skip_pallet_check'):
+            problems = self.filtered(
+                lambda p: p.picking_type_code == 'outgoing'
+                          and p.pallets_expected != p.pallets_loaded
+            )
+            if problems:
+                lines = [
+                    self.env._(
+                        "%(name)s: %(exp)s pallets verwacht, %(got)s 'epal' op de picking.",
+                        name=p.name, exp=p.pallets_expected, got=p.pallets_loaded,
+                    )
+                    for p in problems
+                ]
+                wizard = self.env['pico.pallet.check.wizard'].create({
+                    'picking_ids': [(6, 0, problems.ids)],
+                    'message': "\n".join(lines),
+                })
+                return {
+                    'name': self.env._("Pallets controleren"),
+                    'type': 'ir.actions.act_window',
+                    'res_model': 'pico.pallet.check.wizard',
+                    'res_id': wizard.id,
+                    'view_mode': 'form',
+                    'target': 'new',
+                }
+        return super().button_validate()

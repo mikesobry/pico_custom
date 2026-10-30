@@ -46,7 +46,37 @@
                             </tbody>
                         </table>
 
-                        <!-- footer: kopieer hier je pallets/gewicht-blok, met o.pallets_loaded enz. -->
+                        <!-- Totalen onder de tabel -->
+                        <div t-if="o.state == 'done'" name="pico_totals" class="row mt-3">
+                            <div class="col-8">
+                                <table class="table table-sm table-borderless" style="width:auto;">
+                                    <tr>
+                                        <td><strong>Pallets uit</strong></td>
+                                        <td class="text-end"><span t-out="o.pallets_loaded"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Pallets retour</strong></td>
+                                        <td class="text-end"><span t-out="o.pallets_received"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Pallet saldo</strong></td>
+                                        <td class="text-end"><span t-out="o.pallet_balance"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-4">
+                                <table class="table table-sm table-borderless" style="width:auto; margin-left:auto;">
+                                    <tr>
+                                        <td class="text-nowrap"><strong>Net weight</strong></td>
+                                        <td class="text-end text-nowrap"><span t-field="o.total_net_weight"/> kg</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-nowrap"><strong>Gross weight</strong></td>
+                                        <td class="text-end text-nowrap"><span t-field="o.total_gross_weight"/> kg</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </t>
             </t>

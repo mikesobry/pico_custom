@@ -7,6 +7,7 @@
         <field name="inherit_id" ref="stock.view_picking_form"/>
         <field name="arch" type="xml">
 
+            <!-- om fouten te voorkomen, retour voor validatie telt niet correct -->
             <xpath expr="//button[@name='226']" position="attributes">
                 <attribute name="invisible">state != 'done'</attribute>
             </xpath>
@@ -16,7 +17,7 @@
 
                 <div class="o_row mt16" style="justify-content:space-between; width:100%;">
 
-                    <!-- LINKS: pallets -->
+                    <!-- LINKS: pallets, enkel op uitgaande moves tonen -->
                     <div invisible="picking_type_code != 'outgoing'">
                         <table class="table table-sm" style="width:auto;">
                             <tr>
@@ -43,7 +44,7 @@
                     </div>
 
                     <!-- RECHTS: gewichten -->
-                    <table class="table table-sm" style="width:auto; text-align:right;">
+                    <table class="table table-sm" style="width:auto; margin-left:auto; text-align:right;">
                         <tr>
                             <td><strong>Net weight</strong></td>
                             <td><field name="total_net_weight" readonly="1"/></td>

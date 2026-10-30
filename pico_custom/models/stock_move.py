@@ -6,6 +6,8 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
+PALLET_CODE = 'epal'   # interne referentie van het palletproduct
+
 class StockMove(models.Model):
     _inherit = 'stock.move'
 
@@ -166,3 +168,16 @@ class StockMove(models.Model):
                 )
 
         return super().action_show_details()
+
+    """Forceer pallets altijd onderaan de ui en leverbon"""
+    @api.model_create_multi
+    def create(self, vals_list):
+        pallet_ids = set(
+            self.env['product.product'].search(
+                [('default_code', '=', PALLET_CODE)]
+            ).ids
+        )
+        for vals in vals_list:
+            if vals.get('product_id') in pallet_ids:
+                vals['sequence'] = 9999
+        return super().create(vals_list)
