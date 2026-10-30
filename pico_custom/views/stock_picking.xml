@@ -7,26 +7,40 @@
         <field name="inherit_id" ref="stock.view_picking_form"/>
         <field name="arch" type="xml">
 
+            <xpath expr="//button[@name='226']" position="attributes">
+                <attribute name="invisible">state != 'done'</attribute>
+            </xpath>
+
             <!-- onder de move tabel -->
             <xpath expr="//field[@name='move_ids']" position="after">
 
                 <div class="o_row mt16" style="justify-content:space-between; width:100%;">
 
                     <!-- LINKS: pallets -->
-                    <table class="table table-sm" style="width:auto;">
-                        <tr>
-                            <td><strong>Pallets uit</strong></td>
-                            <td><field name="pallets_loaded" readonly="1"/></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Pallets retour</strong></td>
-                            <td><field name="pallets_received"/></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Pallet saldo</strong></td>
-                            <td><field name="pallet_balance" readonly="1"/></td>
-                        </tr>
-                    </table>
+                    <div invisible="picking_type_code != 'outgoing'">
+                        <table class="table table-sm" style="width:auto;">
+                            <tr>
+                                <td><strong>Pallets uit</strong></td>
+                                <td><field name="pallets_loaded" readonly="1"/></td>
+                                <td invisible="pallets_expected == pallets_loaded or state == 'done'">
+                                    <div class="d-flex align-items-baseline gap-1 text-danger">
+                                        <em>Ajouter</em>
+                                        <field name="pallets_expected" readonly="1" nolabel="1" class="oe_inline"/>
+                                        <em>'epal' sur WH/OUT</em>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Pallets retour</strong></td>
+                                <td><field name="pallets_received" readonly="1"/></td>
+                                <td><em>Utiliser bouton 'retour' (WH/IN/...) </em></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Pallet saldo</strong></td>
+                                <td><field name="pallet_balance" readonly="1"/></td>
+                            </tr>
+                        </table>
+                    </div>
 
                     <!-- RECHTS: gewichten -->
                     <table class="table table-sm" style="width:auto; text-align:right;">
