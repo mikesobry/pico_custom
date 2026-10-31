@@ -4,6 +4,7 @@
             <t t-foreach="docs" t-as="o">
                 <t t-set="partner" t-value="o.picking_ids[:1].partner_id"/>
                 <t t-call="web.external_layout" t-lang="partner.lang">
+
                     <div class="page">
                         <div class="row">
                             <div class="col-6">

@@ -20,7 +20,7 @@
         <!-- Totalen onder de tabel -->
         <xpath expr="//table[@name='stock_move_line_table']" position="after">
             <div t-if="o.state == 'done'" name="pico_totals" class="row mt-3">
-                <div class="col-8">
+                <div class="col-8" t-if="o.picking_type_code == 'outgoing'">
                     <table class="table table-sm table-borderless" style="width:auto;">
                         <tr>
                             <td><strong>Pallets uit</strong></td>
@@ -36,7 +36,7 @@
                         </tr>
                     </table>
                 </div>
-                <div class="col-4">
+                <div class="col-4" t-if="o.picking_type_code == 'outgoing'">
                     <table class="table table-sm table-borderless" style="width:auto; margin-left:auto;">
                         <tr>
                             <td class="text-nowrap"><strong>Net weight</strong></td>

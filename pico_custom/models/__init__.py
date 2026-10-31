@@ -8,3 +8,4 @@ from . import product_pricelist
 from . import res_config_settings
 from . import migrate_stock_move_lines
 from . import pallet_check_wizard
+from . import stock_picking_batch
