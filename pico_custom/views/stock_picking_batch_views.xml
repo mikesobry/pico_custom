@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_stock_picking_batch_form_pico" model="ir.ui.view">
+        <field name="name">stock.picking.batch.form.pico</field>
+        <field name="model">stock.picking.batch</field>
+        <field name="inherit_id" ref="stock_picking_batch.stock_picking_batch_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Pallet- en gewichtsblok boven de tabs -->
+            <xpath expr="//notebook" position="after">
+                <div class="o_row mt16" style="width:100%;">
+
+                    <!-- LINKS: pallets -->
+                    <table class="table table-sm" style="width:auto;">
+                        <tr>
+                            <td><strong>Pallets uit</strong></td>
+                            <td><field name="pallets_loaded" readonly="1"/></td>
+                            <td invisible="pallets_expected == pallets_loaded or state in ('done','cancel')">
+                                <div class="d-flex align-items-baseline gap-1 text-danger">
+                                    <button name="action_add_pallets" type="object" string="Ajouter"
+                                            class="btn btn-link text-danger p-0"/>
+                                    <field name="pallets_expected" readonly="1" nolabel="1" class="oe_inline"/>
+                                    <em>'epal' sur WH/OUT</em>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pallets retour</strong></td>
+                            <td><field name="pallets_received" readonly="1"/></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pallet saldo</strong></td>
+                            <td><field name="pallet_balance" readonly="1"/></td>
+                        </tr>
+                    </table>
+
+                    <!-- RECHTS: gewichten -->
+                    <table class="table table-sm" style="width:auto; margin-left:auto; text-align:right;">
+                        <tr>
+                            <td><strong>Net weight</strong></td>
+                            <td><field name="total_net_weight" readonly="1"/></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Gross weight</strong></td>
+                            <td><field name="total_gross_weight" readonly="1"/></td>
+                        </tr>
+                    </table>
+
+                </div>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

@@ -96,3 +96,28 @@ class StockPicking(models.Model):
                     'target': 'new',
                 }
         return super().button_validate()
+
+    def action_add_pallets(self):
+        pallet = self.env['product.product'].search(
+            [('default_code', '=', PALLET_CODE)], limit=1)
+        for p in self.filtered(lambda p: p.picking_type_code == 'outgoing'
+                                         and p.state not in ('done', 'cancel')):
+            missing = p.pallets_expected - p.pallets_loaded
+            if missing <= 0 or not pallet:
+                continue
+            move = p.move_ids.filtered(lambda m: m.product_id == pallet)[:1]
+            if move:
+                move.product_uom_qty += missing
+                move.quantity += missing
+            else:
+                move = self.env['stock.move'].create({
+                    'picking_id': p.id,
+                    'product_id': pallet.id,
+                    'product_uom_qty': missing,
+                    'quantity': missing,
+                    'location_id': p.location_id.id,
+                    'location_dest_id': p.location_dest_id.id,
+                    'company_id': p.company_id.id,
+                })
+                move._action_confirm()
+        return True

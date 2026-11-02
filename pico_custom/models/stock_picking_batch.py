@@ -34,3 +34,7 @@ class StockPickingBatch(models.Model):
             b.pallet_balance = b.pallets_loaded - b.pallets_received
             b.total_net_weight = sum(p.mapped('total_net_weight'))
             b.total_gross_weight = sum(p.mapped('total_gross_weight'))
+
+    def action_add_pallets(self):
+        self.picking_ids.action_add_pallets()
+        return True

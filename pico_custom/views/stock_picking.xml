@@ -25,11 +25,13 @@
                                 <td><field name="pallets_loaded" readonly="1"/></td>
                                 <td invisible="pallets_expected == pallets_loaded or state == 'done'">
                                     <div class="d-flex align-items-baseline gap-1 text-danger">
-                                        <em>Ajouter</em>
+                                        <button name="action_add_pallets" type="object" string="Ajouter"
+                                                class="btn btn-link text-danger p-0"
+                                                invisible="pallets_expected == pallets_loaded or state in ('done','cancel')"/>
                                         <field name="pallets_expected" readonly="1" nolabel="1" class="oe_inline"/>
                                         <em>'epal' sur WH/OUT</em>
-                                    </div>
-                                </td>
+                                        </div>
+                                    </td>
                             </tr>
                             <tr>
                                 <td><strong>Pallets retour</strong></td>
