@@ -36,7 +36,10 @@
                             <tr>
                                 <td><strong>Pallets retour</strong></td>
                                 <td><field name="pallets_received" readonly="1"/></td>
-                                <td><em>Utiliser bouton 'retour' (WH/IN/...) </em></td>
+                                <td invisible="state != 'done' or pallets_received >= pallets_loaded">
+                                    <button name="action_return_pallets" type="object" string="Retour maken"
+                                            class="btn btn-link p-0"/>
+                                </td>
                             </tr>
                             <tr>
                                 <td><strong>Pallet saldo</strong></td>

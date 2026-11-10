@@ -6,6 +6,12 @@
         <field name="inherit_id" ref="stock_picking_batch.stock_picking_batch_form"/>
         <field name="arch" type="xml">
 
+            <xpath expr="//button[@name='action_print']" position="before">
+                <button name="action_print_pico" type="object"
+                        string="Print delivery slip"
+                        invisible="state not in ('in_progress', 'done')"/>
+            </xpath>
+
             <!-- Pallet- en gewichtsblok boven de tabs -->
             <xpath expr="//notebook" position="after">
                 <div class="o_row mt16" style="width:100%;">
@@ -27,6 +33,10 @@
                         <tr>
                             <td><strong>Pallets retour</strong></td>
                             <td><field name="pallets_received" readonly="1"/></td>
+                            <td invisible="state != 'done' or pallets_received >= pallets_loaded">
+                                <button name="action_return_pallets" type="object" string="Retour maken"
+                                        class="btn btn-link p-0"/>
+                            </td>
                         </tr>
                         <tr>
                             <td><strong>Pallet saldo</strong></td>

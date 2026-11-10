@@ -1,5 +1,6 @@
 from odoo import models, fields, api
-
+from odoo.exceptions import UserError
+from .stock_picking import PALLET_CODE
 
 class StockPickingBatch(models.Model):
     _inherit = 'stock.picking.batch'
@@ -35,6 +36,43 @@ class StockPickingBatch(models.Model):
             b.total_net_weight = sum(p.mapped('total_net_weight'))
             b.total_gross_weight = sum(p.mapped('total_gross_weight'))
 
+    def action_print_pico(self):
+        self.ensure_one()
+        return self.env.ref(
+            'pico_custom.report_wave_deliveryslip_action'
+        ).report_action(self)
+
     def action_add_pallets(self):
-        self.picking_ids.action_add_pallets()
+        for b in self:
+            missing = b.pallets_expected - b.pallets_loaded
+            if missing > 0:
+                b._pallet_target_picking()._add_pallet_move(missing)
         return True
+
+    def _pallet_target_picking(self):
+        """Picking van de wave die de pallets draagt: de eerste die al een epal-move heeft, anders de eerste."""
+        self.ensure_one()
+        moves = self.picking_ids.move_ids.filtered(
+            lambda m: m.product_id.default_code == PALLET_CODE)
+        return moves[:1].picking_id or self.picking_ids.sorted('id')[:1]
+
+    def action_return_pallets(self):
+        self.ensure_one()
+        picking = self.picking_ids.filtered(
+            lambda p: p.state == 'done' and any(
+                m.product_id.default_code == PALLET_CODE for m in p.move_ids))[:1]
+        if not picking:
+            raise UserError(self.env._("Geen gevalideerde picking met epal in deze wave."))
+        wizard = self.env['stock.return.picking'].with_context(
+            active_id=picking.id, active_model='stock.picking'
+        ).create({'picking_id': picking.id})
+        wizard.product_return_moves.filtered(
+            lambda l: l.product_id.default_code != PALLET_CODE).unlink()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': self.env._("Pallets retour"),
+            'res_model': 'stock.return.picking',
+            'res_id': wizard.id,
+            'view_mode': 'form',
+            'target': 'new',
+        }

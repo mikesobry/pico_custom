@@ -97,27 +97,45 @@ class StockPicking(models.Model):
                 }
         return super().button_validate()
 
-    def action_add_pallets(self):
+    def _add_pallet_move(self, qty):
+        self.ensure_one()
         pallet = self.env['product.product'].search(
             [('default_code', '=', PALLET_CODE)], limit=1)
+        if not pallet or qty <= 0:
+            return
+        move = self.move_ids.filtered(lambda m: m.product_id == pallet)[:1]
+        if move:
+            move.product_uom_qty += qty
+            move.quantity += qty
+        else:
+            move = self.env['stock.move'].create({
+                'picking_id': self.id,
+                'product_id': pallet.id,
+                'quantity': qty,
+                'location_id': self.location_id.id,
+                'location_dest_id': self.location_dest_id.id,
+                'company_id': self.company_id.id,
+            })
+            move._action_confirm()
+
+    def action_add_pallets(self):
         for p in self.filtered(lambda p: p.picking_type_code == 'outgoing'
                                          and p.state not in ('done', 'cancel')):
-            missing = p.pallets_expected - p.pallets_loaded
-            if missing <= 0 or not pallet:
-                continue
-            move = p.move_ids.filtered(lambda m: m.product_id == pallet)[:1]
-            if move:
-                move.product_uom_qty += missing
-                move.quantity += missing
-            else:
-                move = self.env['stock.move'].create({
-                    'picking_id': p.id,
-                    'product_id': pallet.id,
-                    'product_uom_qty': missing,
-                    'quantity': missing,
-                    'location_id': p.location_id.id,
-                    'location_dest_id': p.location_dest_id.id,
-                    'company_id': p.company_id.id,
-                })
-                move._action_confirm()
+            p._add_pallet_move(p.pallets_expected - p.pallets_loaded)
         return True
+
+    def action_return_pallets(self):
+        self.ensure_one()
+        wizard = self.env['stock.return.picking'].with_context(
+            active_id=self.id, active_model='stock.picking'
+        ).create({'picking_id': self.id})
+        wizard.product_return_moves.filtered(
+            lambda l: l.product_id.default_code != PALLET_CODE).unlink()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': self.env._("Pallets retour"),
+            'res_model': 'stock.return.picking',
+            'res_id': wizard.id,
+            'view_mode': 'form',
+            'target': 'new',
+        }
